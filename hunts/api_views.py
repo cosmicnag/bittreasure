@@ -7,7 +7,7 @@ from rest_framework.exceptions import APIException, PermissionDenied,\
     ParseError, MethodNotAllowed, AuthenticationFailed
 from rest_framework import authentication, permissions
 from rest_framework.decorators import api_view
-from serializers import UserSerializer, TreasureHuntSerializer
+from serializers import UserSerializer, TreasureHuntSerializer, UserTreasureHuntSerializer
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from models import *
@@ -70,3 +70,9 @@ class TreasureHuntsView(generics.ListCreateAPIView):
     def get_queryset(self, *args, **kwargs):
         return TreasureHunt.objects.all()
 
+class UserTreasureHunts(generics.ListAPIView):
+    serializer_class = UserTreasureHuntSerializer
+
+    def get_queryset(self, *args, **kwargs):
+        user = self.request.user
+        return UserTreasureHunt.objects.filter(user=user)

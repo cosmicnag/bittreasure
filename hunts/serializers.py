@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from models import User, TreasureHunt
+from models import *
 from django.contrib.auth import login, authenticate, logout
 from rest_framework.exceptions import PermissionDenied
 
@@ -44,3 +44,8 @@ class TreasureHuntSerializer(serializers.ModelSerializer):
     class Meta:
         model = TreasureHunt
         fields = ('id', 'name', 'description', 'place', 'issequential', 'isphysical', 'starttime',)
+
+class UserTreasureHuntSerializer(serializers.ModelSerializer):
+    treasurehunt = TreasureHuntSerializer(source='treasurehunt')
+    class Meta:
+        model = UserTreasureHunt
