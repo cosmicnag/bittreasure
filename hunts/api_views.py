@@ -9,6 +9,7 @@ from rest_framework import authentication, permissions
 from rest_framework.decorators import api_view
 from serializers import UserSerializer, TreasureHuntSerializer
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import get_object_or_404
 from models import *
 
 
@@ -32,11 +33,20 @@ class UsersView(generics.ListCreateAPIView):
     def get_queryset(self):
         return User.objects.all()
 
+@api_view(['POST'])
+@csrf_exempt
+def participate(request,pk):
+    usertreasurehunt = UserTreasureHunt()
+    usertreasurehunt.user = request.user
+    treasurehunt = get_object_or_404(TreasureHunt,pk=pk)
+    usertreasurehunt.treasurehunt = treasurehunt 
+    usertreasurehunt.save()
+    return Response({'address':usertreasurehunt.address})
 
 @api_view(['GET'])
 def logout(request):
     auth_logout(request)
-    return Response({'success': 'User logged out'})
+    return Response({'detail': 'User logged out'})
 
 
 @api_view(['POST'])

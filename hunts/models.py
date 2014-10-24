@@ -67,6 +67,7 @@ class TreasureHunt(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     place = models.CharField(max_length=255)
+    entryfee = models.IntegerField(default=0)
     starttime = models.DateTimeField(blank=True, null=True)
     issequential = models.BooleanField(default=False)
     isphysical = models.BooleanField(default=False)
@@ -93,4 +94,11 @@ class UserLocation(models.Model):
 class UserTreasureHunt(models.Model):
     user = models.ForeignKey(User)
     treasurehunt = models.ForeignKey(TreasureHunt)
+    address = models.CharField(max_length=255,blank=True)
+    paid = models.BooleanField(default=False)
     timestamp = models.DateTimeField()
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.timestamp = datetime.datetime.now()
+            self.address = '192L6LuTkU9gJtN7DQg8i93Fxzk3GTPEUZ'
+        return super(UserTreasureHunt, self).save(*args, **kwargs)
