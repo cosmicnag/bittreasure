@@ -7,7 +7,7 @@ from rest_framework.exceptions import APIException, PermissionDenied,\
     ParseError, MethodNotAllowed, AuthenticationFailed
 from rest_framework import authentication, permissions
 from rest_framework.decorators import api_view
-from serializers import UserSerializer
+from serializers import UserSerializer, TreasureHuntSerializer
 from django.views.decorators.csrf import csrf_exempt
 from models import *
 
@@ -52,3 +52,11 @@ def login(request):
         }
         return Response(user_data)
     raise AuthenticationFailed("Username / password do not match")
+
+
+class TreasureHuntsView(generics.ListCreateAPIView):
+    serializer_class = TreasureHuntSerializer   
+ 
+    def get_queryset(self, *args, **kwargs):
+        return TreasureHunt.objects.all()
+
