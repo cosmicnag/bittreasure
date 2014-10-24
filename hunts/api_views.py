@@ -48,6 +48,27 @@ def logout(request):
     auth_logout(request)
     return Response({'detail': 'User logged out'})
 
+@api_view(['GET'])
+def clues(request,pk):
+    treasurehunt = get_object_or_404(TreasureHunt,pk=pk)
+    user = request.user
+    if not treasurehunt.issequential:
+        locations = Location.objects.filter(treasurehunt=treasurehunt)
+    else:
+        # TODO handle ordering properly
+        userlocations = UserLocation.objects.filter(location__treasurehunt=treasurehunt).filter(user=user).order_by('-location__order')
+        if userlocations.count() > 0:
+            currentlocation = userlocations[-1].location
+            #if currentlocation.confirmed: #TODO
+            location = Location.objects.filter(treasurehunt=treasurehunt).filter(order__gt=currentlocation.order)[0]
+        else:
+            location = Location.objects.filter(treasurehunt=treasurehunt).order_by('order')[0]
+        locations = [location]
+    return Response({
+        'clues': [l.get_clue() for l in locations]
+    })
+
+    
 
 @api_view(['POST'])
 @csrf_exempt

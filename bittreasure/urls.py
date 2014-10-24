@@ -11,6 +11,7 @@ urlpatterns = patterns('',
     url('^api/users/logout/$', 'hunts.api_views.logout', name='api_user_logout'),
     url('^api/users/treasurehunts/$', UserTreasureHunts.as_view(), name='api_usertreasurehunts'),
     url('^api/treasurehunts/(?P<pk>[0-9]+)/participate/$', 'hunts.api_views.participate', name='api_participate'),
+    url('^api/treasurehunts/(?P<pk>[0-9]+)/clues/$', 'hunts.api_views.clues', name='api_clues'),
     url('^api/treasurehunts/$', TreasureHuntsView.as_view(), name='api_treasurehunts_view'),
 
     url(r'^admin/', include(admin.site.urls)),

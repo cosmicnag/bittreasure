@@ -77,6 +77,7 @@ class TreasureHunt(models.Model):
 
 class Location(models.Model):
     treasurehunt = models.ForeignKey('TreasureHunt', blank=True, null=True)
+    order = models.IntegerField(default=0)
     point = models.PointField()
     radius = models.IntegerField(default=10, help_text="in metres")
     text = models.TextField()
@@ -84,6 +85,12 @@ class Location(models.Model):
     payload = models.TextField(blank=True)
     extra = models.TextField(blank=True)
     users = models.ManyToManyField('User', through='UserLocation')
+
+    def get_clue(self):
+        return {
+            'locationid': self.id,
+            'clue': self.clue
+        }
 
 class UserLocation(models.Model):
     user = models.ForeignKey(User)

@@ -3,6 +3,7 @@ from models import *
 
 class LocationInline(admin.StackedInline):
     model = Location
+    extra = 0
 
 
 class TreasureHuntAdmin(admin.ModelAdmin):
