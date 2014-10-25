@@ -5,6 +5,7 @@ import datetime
 from rest_framework.authtoken.models import Token
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
+from hunts import utils
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -71,9 +72,20 @@ class TreasureHunt(models.Model):
     starttime = models.DateTimeField(blank=True, null=True)
     issequential = models.BooleanField(default=False)
     isphysical = models.BooleanField(default=False)
+    istestnet = models.BooleanField(default=True)
+    m = models.IntegerField(default=1)
+    n = models.IntegerField(default=1)
     users = models.ManyToManyField('User', through='UserTreasureHunt')
     def __unicode__(self):
     	return self.name
+    def save(self, *args, **kwargs):
+        skipflag = kwargs.get('skip',False)
+        if kwargs.has_key('skip'):
+            kwargs.pop('skip')
+        super(TreasureHunt,self).save(*args,**kwargs)
+        if not skipflag:
+            _treasurehunt = utils.getbountydetails(self)
+            _treasurehunt.save(skip=True)
 
 class Location(models.Model):
     treasurehunt = models.ForeignKey('TreasureHunt', blank=True, null=True)
