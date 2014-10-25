@@ -10,6 +10,7 @@ from rest_framework.decorators import api_view
 from serializers import UserSerializer, TreasureHuntSerializer, UserTreasureHuntSerializer
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
+from django.contrib.gis import geos
 from models import *
 
 
@@ -40,6 +41,8 @@ def participate(request,pk):
     usertreasurehunt.user = request.user
     treasurehunt = get_object_or_404(TreasureHunt,pk=pk)
     usertreasurehunt.treasurehunt = treasurehunt 
+    if treasurehunt.entryfee == 0:
+        usertreasurehunt.paid = True
     usertreasurehunt.save()
     return Response({'address':usertreasurehunt.address})
 
@@ -68,8 +71,43 @@ def clues(request,pk):
         'clues': [l.get_clue() for l in locations]
     })
 
-    
 
+@api_view(['POST'])
+def gotit(request,pk):
+    lat = request.POST.get('lat', None)
+    lon = request.POST.get('lon', None)
+    payload = request.POST.get('payload', None)
+    user = request.user
+    if not lat or not lon:
+        raise APIException("fuck off, i need lat and lon")
+    location = get_object_or_404(Location, pk=pk)
+    point = geos.Point(float(lat), float(lon))
+    distance = point.distance(location.point) * 1000
+    treasurehunt = location.treasurehunt
+
+    if UserTreasureHunt.objects.filter(treasurehunt=treasurehunt, user=user, paid=True).count() == 0:
+        raise APIException("you are not part of this treasure hunt. pay up or go away.")
+
+    if (location.radius < distance):
+        raise APIException("you are not close enough")
+    else:
+        userlocation = UserLocation()
+        userlocation.user = user
+        userlocation.location = location
+        if treasurehunt.isphysical and payload:
+            if payload == location.payload:
+                userlocation.isconfirmed = True
+        if not treasurehunt.isphysical:
+            userlocation.isconfirmed = True
+        userlocation.save()
+        ret = {
+            'text': location.text
+        }
+        if not treasurehunt.isphysical:
+            ret['payload'] = location.payload
+        return Response(ret)
+
+#TODO: remove
 @api_view(['POST'])
 @csrf_exempt
 def login(request):

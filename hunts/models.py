@@ -98,6 +98,11 @@ class UserLocation(models.Model):
     timestamp = models.DateTimeField()
     isconfirmed = models.BooleanField(default=False)
 
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.timestamp = datetime.datetime.now()
+        return super(UserLocation, self).save(*args, **kwargs)
+
 class UserTreasureHunt(models.Model):
     user = models.ForeignKey(User)
     treasurehunt = models.ForeignKey(TreasureHunt)
