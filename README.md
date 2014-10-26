@@ -15,43 +15,45 @@ The project consists of the following parts :
   - 'Treasure Hunt' Android App
 
 
-88 [ Project Setup ]**
+** [ Project Setup ]**
 
 Install system dependencies:
 
-### Postgres / PostGIS:
+#### Postgres / PostGIS:
+
+Ubuntu / Debian-based:  
+
+    sudo apt-get install postgresql-9.3 postgresql-9.3-postgis
+
+
+#### Python setup:
 
 Ubuntu / Debian-based:
-  sudo apt-get install postgresql-9.3 postgresql-9.3-postgis
+
+    sudo apt-get install python-setuptools  
+    sudo easy_install pip  
+    sudo pip install virtualenv  
 
 
-### Python setup:
-
-Ubuntu / Debian-based:
-  sudo apt-get install python-setuptools
-  sudo easy_install pip
-  sudo pip install virtualenv
-
-
-### Create virtualenv:
+#### Create virtualenv:
 
 In side code folder, or wherever you like to keep your virtualenvs:
 
-  virtualenv .
-  source bin/activate  (activate virtualenv)
+    virtualenv .  
+    source bin/activate  (activate virtualenv)
 
-### Install python requirements:
+#### Install python requirements:
 (when inside virtualenv):
 
-pip install -r requirements.txt
+    pip install -r requirements.txt
 
-### Setup database:
+#### Setup database:
 (when inside virtualenv):
 
-python manage.py migrate
+    python manage.py migrate
 
-### Run project:
+#### Run project:
 (when inside virtualenv):
 
-python manage.py runserver
+    python manage.py runserver
 
